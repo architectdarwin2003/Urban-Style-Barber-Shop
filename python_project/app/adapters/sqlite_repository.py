@@ -11,6 +11,10 @@ DEFAULT_DB_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
     "urban_style.db",
 )
+DEFAULT_SQL_DUMP_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "base_de_datos_legible.sql",
+)
 
 
 def hash_password(raw_password: str) -> str:
@@ -21,11 +25,28 @@ class SQLiteBarberShopRepository(BarberShopRepositoryPort):
     def __init__(self, db_path: str = DEFAULT_DB_PATH) -> None:
         self.db_path = db_path
         self._init_database()
+        self._export_readable_sql()
 
     def _get_connection(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
         return conn
+
+    def _export_readable_sql(self) -> None:
+        try:
+            with self._get_connection() as conn:
+                lines = [
+                    "-- ============================================================================",
+                    "-- VISTA LEGIBLE DE LA BASE DE DATOS SQLITE (urban_style.db)",
+                    "-- Este archivo se actualiza automaticamente para poder ver las tablas en texto",
+                    "-- ============================================================================\n",
+                ]
+                for line in conn.iterdump():
+                    lines.append(line)
+                with open(DEFAULT_SQL_DUMP_PATH, "w", encoding="utf-8") as f:
+                    f.write("\n".join(lines) + "\n")
+        except Exception:
+            pass
 
     def _init_database(self) -> None:
         with self._get_connection() as conn:
