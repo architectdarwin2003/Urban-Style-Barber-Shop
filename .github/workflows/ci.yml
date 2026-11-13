@@ -1,0 +1,50 @@
+# Pipeline CI/CD para SEFI-TI (Sistema de Evaluación Financiera y Turnos Inteligentes)
+# Cliente Piloto: Urban Style Barber Shop (Medellín)
+name: SEFI-TI CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  test-backend:
+    name: Backend Tests (Python Native Unittest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar dependencias
+        working-directory: ./python_project
+        run: pip install -r requirements.txt
+      - name: Ejecutar 10 Tests Unitarios
+        working-directory: ./python_project
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+  test-frontend:
+    name: Frontend Tests (Node.js Native Test Runner)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Ejecutar 10 Tests Unitarios
+        working-directory: ./javascript_project
+        run: npm test
+
+  deploy:
+    name: Automated Deploy to Local Apache (WSL)
+    needs: [test-backend, test-frontend]
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copia segura hacia /var/www/html/
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r javascript_project/public/* /var/www/html/
+          sudo chown -R www-data:www-data /var/www/html/
+          sudo chmod -R 755 /var/www/html/

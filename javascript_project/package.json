@@ -1,0 +1,9 @@
+{
+  "name": "sefi-ti-urban-style-frontend",
+  "version": "1.0.0",
+  "description": "Frontend Vanilla JS Modular + Tailwind CSS para SEFI-TI (Urban Style Barber Shop Medellín)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}

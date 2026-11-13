@@ -1,0 +1,6 @@
+{
+  "name": "SEFI-TI · Urban Style Barber Shop",
+  "description": "Sistema de Evaluación Financiera (VAN, TIR Newton-Raphson, Bisección, Semáforo de Punto de Equilibrio) y Turnos Inteligentes para Urban Style Barber Shop (Medellín) con Arquitectura Hexagonal Python + Vanilla JS Modular.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

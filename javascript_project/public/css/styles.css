@@ -1,0 +1,29 @@
+/* Estilos Base Apple-Style para SEFI-TI · Urban Style Barber Shop (Medellín) */
+:root {
+  --bg-canvas: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-muted: #475569;
+  --accent-gold: #D4AF37;
+  --accent-amber: #F59E0B;
+}
+
+html.dark {
+  --bg-canvas: #0B0F17;
+  --bg-surface: rgba(17, 24, 39, 0.78);
+  --text-primary: #F8FAFC;
+  --text-muted: #94A3B8;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tabular-nums {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}

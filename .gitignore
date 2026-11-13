@@ -1,0 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+.playwright-cli/
+.aistudio/
+public/assets/aistudio/
+__pycache__/
+*.pyc
