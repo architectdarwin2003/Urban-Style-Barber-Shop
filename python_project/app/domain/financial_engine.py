@@ -32,7 +32,7 @@ def calculate_van(
         float(flow) / ((1.0 + float(discount_rate)) ** t)
         for t, flow in enumerate(cash_flows, start=1)
     )
-    return 0.0
+    return round(-float(initial_investment) + present_value, 6)
 
 
 def calculate_van_raw(
