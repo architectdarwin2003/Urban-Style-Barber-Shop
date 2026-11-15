@@ -137,3 +137,202 @@
 | Por Hacer (Backlog) | En Progreso (WIP) | En Revision / Pruebas TDD | Completado (Done) |
 | :--- | :--- | :--- | :--- |
 | *Sin elementos pendientes (100% del alcance completado)* | *Pipeline CI/CD activo en cada push a `main`* | **Verificacion Continua (20/20 Tests):**<br>- 10 tests `unittest` (Python)<br>- 10 tests `node --test` (JS)<br>- Trazabilidad Git Red-Green-Refactor | **Sprint 1:**<br>- **US-01:** Calculo VAN y Dictamen<br>- **US-02:** Calculo TIR Newton-Raphson<br>- **US-03:** Respaldo Biseccion<br>- **US-04:** Validacion Horaria y Cruces<br><br>**Sprint 2:**<br>- **US-05:** Reserva de Citas y Adicionales<br>- **US-06:** Caja y Punto de Equilibrio<br>- **US-07:** Evaluar Inversion (VAN/TIR)<br>- **US-08:** Agenda del Barbero (Max 2 descansos)<br><br>**Sprint 3:**<br>- **US-09:** Consulta por Codigo/Nombre<br>- **US-10:** Login por Rol y Admin Unico<br>- **US-11:** Precios y Servicios<br>- **US-12:** Modo Sol/Luna y CI/CD |
+
+---
+
+## 4. Product Backlog Completo del Entregable 2 (21 Historias de Usuario: US-01 a US-21)
+
+Fuente oficial: **Segunda Entrega · De la Viabilidad al Primer Sprint Backlog · SEFI-TI** (`SEFI-TI-USBS-2026-01`, Total: **75 puntos de historia** distribuidos en 5 epicas).
+
+### Epicas del Product Backlog (Entregable 2)
+
+| Epica | Alcance | Historias |
+| :--- | :--- | :--- |
+| **EP-01 Motor financiero SEFI-TI** | VAN, TIR con Newton-Raphson, biseccion y validaciones (Hito 1) | US-01 a US-04 |
+| **EP-02 Turnos y disponibilidad** | Persistencia, agendamiento y panel en tiempo real (Hito 2) | US-08, US-12, US-13, US-15 |
+| **EP-03 Acceso, tarifas y notificaciones** | RBAC, matriz tarifaria, WhatsApp y registro de ingresos (Hito 2) | US-09, US-10, US-14, US-16 |
+| **EP-04 Validacion y herramientas visuales** | Casos reales y herramientas de decision financiera (Hito 3) | US-07, US-11, US-17, US-18, US-21 |
+| **EP-05 Calidad, gobernanza y despliegue** | Pruebas, Git Flow y CI, Habeas Data y despliegue (Hito 4) | US-05, US-06, US-19, US-20 |
+
+### Catalogo de las 21 Historias de Usuario (US-01 a US-21)
+
+#### US-01 · VAN con dictamen de viabilidad (`EP-01` · Prioridad: 1 · Valor: Alto · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** ingresar la inversion inicial ($I_0$), la tasa de descuento ($r$) y los flujos de caja ($FC_t$) para obtener el VAN con su dictamen (Viable / Indiferente / No viable) y decidir si una inversion vale la pena antes de comprometer capital.
+- **Criterios de aceptacion:**
+  - Dado un caso con resultado calculado manualmente, cuando se calcula, entonces el VAN coincide con una tolerancia de `0,01`.
+  - El dictamen sigue el criterio de la seccion 3-C del Acta: Viable si el VAN es positivo, Indiferente si es cero y No viable si es negativo.
+  - La funcion `calcular_van()` no depende de como se ingresan los datos (teclado o CSV).
+
+#### US-02 · TIR con Newton-Raphson (`EP-01` · Prioridad: 2 · Valor: Alto · 5 pts)
+- **Como** administrador de la barberia,
+- **Quiero** obtener la TIR de una inversion calculada con el metodo de Newton-Raphson ($\varepsilon = 10^{-6}$) para conocer la rentabilidad real del capital y compararla con mi tasa de descuento.
+- **Criterios de aceptacion:**
+  - Dado un flujo con TIR conocida, cuando se calcula, entonces el resultado difiere menos de $10^{-6}$ del valor esperado.
+  - La iteracion se detiene al cumplir la tolerancia $\varepsilon$ o al llegar al maximo de iteraciones configurado.
+  - El resultado informa la TIR y el numero de iteraciones; si no converge, lo indica de forma explicita.
+
+#### US-03 · Respaldo por biseccion (`EP-01` · Prioridad: 3 · Valor: Alto · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** que el sistema use biseccion cuando Newton-Raphson no converge para obtener un resultado confiable con cualquier flujo de caja valido.
+- **Criterios de aceptacion:**
+  - Si Newton-Raphson supera el maximo de iteraciones o la derivada es casi cero, el sistema cambia a biseccion sin intervencion del usuario.
+  - Con un flujo donde Newton-Raphson no converge, la biseccion entrega la TIR con error menor a $10^{-6}$.
+  - Si no hay cambio de signo en los flujos, el sistema informa que la TIR no esta definida y no lanza errores no controlados.
+
+#### US-04 · Validacion de entradas del motor (`EP-01` · Prioridad: 4 · Valor: Alto · 2 pts)
+- **Como** administrador de la barberia,
+- **Quiero** que el sistema valide montos, tasas y flujos antes de calcular para evitar resultados erroneos por datos invalidos.
+- **Criterios de aceptacion:**
+  - Flujos vacios, valores no numericos o inversion negativa producen un mensaje de error claro, no un fallo del programa.
+  - Una tasa de descuento menor o igual a `-100 %` es rechazada.
+  - Cada regla de validacion tiene al menos una prueba unitaria.
+
+#### US-05 · Suite de pruebas pytest con cobertura de ramas >= 90 % (`EP-05` · Prioridad: 5 · Valor: Alto · 5 pts)
+- **Como** integrante del Development Team (QA),
+- **Quiero** una suite de pruebas con pytest para el motor financiero para garantizar la exactitud del calculo y detectar regresiones.
+- **Criterios de aceptacion:**
+  - La suite cubre VAN, TIR, biseccion, dictamen y validaciones con casos calculados manualmente.
+  - La cobertura de ramas del motor es de al menos `90 %` (`pytest-cov` con cobertura de ramas).
+  - Todas las pruebas pasan en local y en el pipeline de integracion continua.
+
+#### US-06 · Git Flow y CI en GitHub Actions (`EP-05` · Prioridad: 6 · Valor: Medio · 5 pts)
+- **Como** integrante del Development Team,
+- **Quiero** un repositorio con Git Flow y un pipeline de integracion continua con la rama `main` protegida para integrar codigo de forma segura y trazable.
+- **Criterios de aceptacion:**
+  - Existen las ramas `main`, `develop` y `feature/*`; `main` no admite push directo y solo recibe Pull Requests con al menos una aprobacion.
+  - Cada Pull Request ejecuta pytest con cobertura en GitHub Actions y no se puede fusionar si falla.
+  - El README documenta el flujo de ramas, la convencion de commits y la ejecucion en Colab y VS Code.
+
+#### US-07 · Caso real: ahorro por compras en lote (`EP-04` · Prioridad: 7 · Valor: Alto · 2 pts)
+- **Como** administrador de la barberia,
+- **Quiero** evaluar con el motor financiero el ahorro generado por comprar insumos en lote para saber si me conviene cambiar mi forma de comprar.
+- **Criterios de aceptacion:**
+  - Con precios reales por unidad y por lote se arman $I_0$, $r$ y los flujos, y se calculan VAN y TIR.
+  - El administrador valida los supuestos (tasa, horizonte y precios) y quedan documentados.
+  - El resultado muestra el dictamen en lenguaje claro para una persona no tecnica.
+
+#### US-08 · Modelo de datos y persistencia (`EP-02` · Prioridad: 8 · Valor: Alto · 3 pts)
+- **Como** integrante del Development Team,
+- **Quiero** una capa de persistencia con el modelo de datos de clientes, barberos, servicios, turnos y pagos para guardar la informacion con un unico punto de origen por dato.
+- **Criterios de aceptacion:**
+  - El modelo incluye clientes (nombre, telefono, correo), barberos, servicios, turnos y pagos, con migraciones versionadas.
+  - El dominio accede a los datos mediante interfaces, sin acoplarse a frameworks de persistencia (restriccion de la seccion 8 del Acta).
+  - El procedimiento de respaldo periodico queda documentado y probado una vez.
+
+#### US-09 · Autenticacion y control de acceso por roles (`EP-03` · Prioridad: 9 · Valor: Alto · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** ingresar con credenciales y que los barberos tengan permisos distintos a los mios para proteger la informacion financiera y de gestion.
+- **Criterios de aceptacion:**
+  - Existen los roles Administrador y Barbero; el Barbero recibe acceso denegado en la matriz tarifaria y en los modulos financieros.
+  - Las contrasenas se guardan con hash y la sesion expira por inactividad.
+  - Pruebas automaticas verifican el acceso permitido y el denegado por cada rol.
+
+#### US-10 · Matriz tarifaria del administrador (`EP-03` · Prioridad: 10 · Valor: Medio · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** definir los servicios con su precio y su duracion para que los turnos y los calculos financieros usen tarifas oficiales.
+- **Criterios de aceptacion:**
+  - Puedo crear, editar y desactivar servicios con nombre, precio en COP y duracion en minutos.
+  - Un cambio de tarifa no altera turnos ya agendados ni pagos historicos.
+  - Solo el rol Administrador accede al modulo.
+
+#### US-11 · Caso real: ingreso incremental por optimizacion de tiempos de corte (`EP-04` · Prioridad: 11 · Valor: Alto · 2 pts)
+- **Como** administrador de la barberia,
+- **Quiero** evaluar el ingreso incremental de reducir los tiempos de corte para saber cuanto valor adicional genera atender mas turnos por dia.
+- **Criterios de aceptacion:**
+  - Con las duraciones actuales y las optimizadas de la matriz tarifaria se estiman los turnos extra por dia y los flujos incrementales mensuales.
+  - El motor entrega VAN, TIR y dictamen del escenario, con supuestos validados por el administrador.
+  - El caso queda documentado y reproducible con datos de ejemplo en el repositorio.
+
+#### US-12 · Agendar turno (`EP-02` · Prioridad: 12 · Valor: Alto · 5 pts)
+- **Como** cliente de la barberia,
+- **Quiero** agendar un turno eligiendo servicio, barbero y horario disponible para evitar esperas y llamadas.
+- **Criterios de aceptacion:**
+  - Solo se muestran horarios libres del barbero segun la duracion del servicio; no se permiten turnos solapados.
+  - Antes de confirmar, el cliente acepta la autorizacion de tratamiento de datos (Ley 1581 de 2012) con su finalidad.
+  - Al confirmar se muestra el resumen del turno y queda registrado como Confirmado.
+
+#### US-13 · Disponibilidad en tiempo real (`EP-02` · Prioridad: 13 · Valor: Alto · 5 pts)
+- **Como** barbero,
+- **Quiero** ver en tiempo real mi agenda y la ocupacion de todos los barberos para gestionar los huecos y evitar sobrecarga.
+- **Criterios de aceptacion:**
+  - El panel muestra por barbero los turnos del dia con su estado (libre, ocupado, en curso) y se actualiza solo.
+  - Un turno nuevo o cancelado se refleja en el panel en 10 segundos o menos.
+  - Sin conexion, el panel muestra la ultima informacion guardada en cache con un aviso visible.
+
+#### US-14 · Recordatorios por WhatsApp (`EP-03` · Prioridad: 14 · Valor: Alto · 5 pts)
+- **Como** cliente de la barberia,
+- **Quiero** recibir recordatorios por WhatsApp antes de mi turno para no olvidarlo ni perder el cupo.
+- **Criterios de aceptacion:**
+  - Al confirmar el turno se envia una confirmacion, y un recordatorio automatico antes de la hora con anticipacion configurable.
+  - Si falla la WhatsApp Cloud API, el sistema registra el error y muestra confirmacion visual en pantalla.
+  - Solo se envian mensajes a clientes con autorizacion de tratamiento de datos.
+
+#### US-15 · Cancelar o reprogramar turno (`EP-02` · Prioridad: 15 · Valor: Medio · 2 pts)
+- **Como** cliente de la barberia,
+- **Quiero** cancelar o reprogramar mi turno para liberar el cupo y reducir las inasistencias.
+- **Criterios de aceptacion:**
+  - Puedo cancelar o reprogramar hasta dos horas antes del turno.
+  - Al cancelar, el horario queda libre de inmediato para otros clientes.
+  - Se registra el estado del turno (cancelado, reprogramado o inasistencia) para llevar estadisticas.
+
+#### US-16 · Registro de pagos e ingresos del dia (`EP-03` · Prioridad: 16 · Valor: Medio · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** registrar los pagos recibidos en el local y ver los ingresos del dia para tener trazabilidad de mis ingresos.
+- **Criterios de aceptacion:**
+  - Cada turno atendido permite registrar el pago (valor y medio: efectivo o transferencia), sin pasarela transaccional.
+  - El resumen diario muestra los ingresos totales y por barbero.
+  - Los valores salen de la matriz tarifaria y no se duplican.
+
+#### US-17 · Semaforo financiero de punto de equilibrio (`EP-04` · Prioridad: 17 · Valor: Medio · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** un semaforo de punto de equilibrio para saber de un vistazo si el negocio cubre sus costos.
+- **Criterios de aceptacion:**
+  - El semaforo es verde, amarillo o rojo segun los ingresos del periodo frente a los costos fijos y variables, con umbrales visibles.
+  - Los ingresos provienen del registro de pagos y los costos los captura el administrador como parametros.
+  - El calculo tiene pruebas con casos de cada color.
+
+#### US-18 · Flujo de caja segun el calendario colombiano (`EP-04` · Prioridad: 18 · Valor: Medio · 5 pts)
+- **Como** administrador de la barberia,
+- **Quiero** una prediccion de flujos de caja que considere festivos y dias habiles de Colombia para anticipar los meses de alta y baja demanda.
+- **Criterios de aceptacion:**
+  - La proyeccion usa el historial de ingresos y el calendario de festivos de Colombia.
+  - Muestra flujos mensuales y puede alimentar el calculo de VAN y TIR del motor.
+  - Con datos insuficientes, informa la limitacion en lugar de proyectar.
+
+#### US-19 · Derechos de Habeas Data (`EP-05` · Prioridad: 19 · Valor: Medio · 3 pts)
+- **Como** cliente de la barberia,
+- **Quiero** consultar y pedir la eliminacion de mis datos personales para ejercer mis derechos bajo la Ley 1581 de 2012.
+- **Criterios de aceptacion:**
+  - La politica de tratamiento es visible y cada autorizacion queda registrada con fecha y finalidad.
+  - El cliente puede solicitar la consulta o la eliminacion de sus datos y el administrador la ejecuta con registro.
+  - Los datos eliminados no aparecen en listados ni reciben notificaciones.
+
+#### US-20 · Despliegue en la sede piloto y capacitacion (`EP-05` · Prioridad: 20 · Valor: Alto · 5 pts)
+- **Como** administrador de la barberia,
+- **Quiero** el sistema desplegado en la sede piloto y mi equipo capacitado para usarlo en la operacion diaria.
+- **Criterios de aceptacion:**
+  - La aplicacion web responsiva queda accesible desde los dispositivos de la sede, con datos reales.
+  - Se realiza una capacitacion de 20 minutos a barberos y administrador, con un manual de uso de una pagina.
+  - El administrador firma una lista de verificacion de pruebas finales antes de la sustentacion.
+
+#### US-21 · Visualizador de gastos (`EP-04` · Prioridad: 21 · Valor: Bajo · 3 pts)
+- **Como** administrador de la barberia,
+- **Quiero** un visualizador de gastos por categoria y mes para identificar en que se va el dinero.
+- **Criterios de aceptacion:**
+  - Puedo registrar gastos (categoria, valor y fecha) y verlos agrupados por categoria y mes en graficos.
+  - Los totales coinciden con los registros, verificado con datos conocidos.
+  - Puedo filtrar por rango de fechas.
+
+### Definition of Done (DoD) del Equipo (Entregable 2)
+
+1. El codigo esta en una rama `feature/*` y se integra a `develop` mediante un Pull Request aprobado por al menos otro integrante (revision por pares).
+2. El codigo ejecuta sin errores ni advertencias criticas, cumple PEP 8 y los commits tienen mensajes descriptivos.
+3. Hay pruebas unitarias escritas y aprobadas para la logica nueva, con cobertura de ramas de al menos `90 %` en el motor financiero.
+4. El pipeline de GitHub Actions esta en verde en el Pull Request y no quedan errores criticos ni bloqueantes abiertos.
+5. La logica de dominio no depende de frameworks de persistencia ni de vistas (arquitectura hexagonal, seccion 8 del Acta); las entradas se validan y las excepciones se controlan.
+6. La funcionalidad queda desplegada o ejecutable en el ambiente de pruebas (rama `develop`; CLI en Colab o VS Code, o aplicacion web de pruebas) sin fallos en el flujo principal.
+7. Los criterios de aceptacion se verifican en una demostracion y el Product Owner acepta la historia en el Sprint Review.
+8. La documentacion esta actualizada (README, docstrings y notas de uso) y, si se manejan datos personales, se cumple la Ley 1581 de 2012.
+9. Todas las subtareas estan cerradas y la historia aparece como Done en Jira.
+
